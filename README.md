@@ -1,2 +1,2 @@
 # quasar-project
-An e-commerce website mock project written in TypeScript, Vue.js and Quasar
+An e-commerce mock website project written in TypeScript, Vue.js and Quasar
