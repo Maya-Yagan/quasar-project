@@ -1,0 +1,127 @@
+<template>
+  <q-btn
+    rounded
+    flat
+    icon="grid_view"
+    class="text-capitalize MyBtn"
+    :label="label"
+  >
+    <q-menu
+      anchor="bottom start"
+      self="top left"
+      max-height="400px"
+      :offset="[0, 23]"
+    >
+      <q-item class="q-pa-none">
+        <q-card-section class="scroll-container q-pa-none">
+          <dropdown-menu
+            :tabs="tabs"
+            @tab-hover="handleTabHover"
+          ></dropdown-menu>
+        </q-card-section>
+        <q-card class="bg-blue-1 row scroll-container q-px-lg" flat>
+          <q-card-section class="col-4">
+            <h6>Title</h6>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+          </q-card-section>
+          <q-card-section class="col-4">
+            <h6>Title</h6>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+          </q-card-section>
+          <q-card-section class="col-4">
+            <h6>Title</h6>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+            <q-item><a href="#">link</a></q-item>
+          </q-card-section>
+        </q-card>
+        <dropdown-info
+          imgLink="https://i5.walmartimages.com/dfw/4ff9c6c9-5977/k2-_e9468413-fe29-4fb3-8ff5-aab0f25d4023.v1.jpg?odnHeight=142px&odnWidth=142px&odnBg=FFFFFF"
+          :title="currentInfo.title"
+          :info="currentInfo.info"
+        >
+        </dropdown-info>
+      </q-item> </q-menu
+  ></q-btn>
+</template>
+
+<script lang="ts">
+import DropdownMenu from '../components/DropdownMenu.vue';
+import DropdownInfo from '../components/DropdownInfo.vue';
+
+export default {
+  components: {
+    DropdownMenu,
+    DropdownInfo,
+  },
+  props: {
+    label: { type: String },
+    tabs: { type: Array as () => { id: number; label: string }[] },
+  },
+  data() {
+    return {
+      currentMiddleLinks: [] as string[],
+      currentInfo: {
+        imgLink: '',
+        title: '',
+        info: '',
+      },
+    };
+  },
+  methods: {
+    handleTabHover(tabId: number) {
+      this.currentInfo = this.generateInfoForTab(tabId);
+    },
+    generateLinksForTab(tabId: number) {
+      return Array.from(
+        { length: 5 },
+        (_, index) => `Link ${index + 1} for Tab ${tabId}`
+      );
+    },
+    generateInfoForTab(tabId: number) {
+      return {
+        imgLink:
+          'https://i5.walmartimages.com/dfw/4ff9c6c9-5977/k2-_e9468413-fe29-4fb3-8ff5-aab0f25d4023.v1.jpg?odnHeight=142px&odnWidth=142px&odnBg=FFFFFF',
+        title: `Title for Tab ${tabId}`,
+        info: `Info for Tab ${tabId}`,
+      };
+    },
+  },
+};
+</script>
+<style scoped>
+.MyBtn:hover {
+  background-color: #0d47a1;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+.scroll-container {
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid #ccc;
+}
+a {
+  color: black;
+}
+a:hover {
+  color: black;
+  text-decoration: underline;
+}
+</style>
