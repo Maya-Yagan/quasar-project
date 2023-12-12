@@ -19,37 +19,13 @@
             @tab-hover="handleTabHover"
           ></dropdown-menu>
         </q-card-section>
-        <q-card class="bg-blue-1 row scroll-container q-px-lg" flat>
-          <q-card-section class="col-4">
-            <h6>Title</h6>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
+        <q-card class="bg-blue-1 row scroll-container" style="width:400px" flat>
+          <q-card-section v-for="link in currentMiddleLinks" :key="link">
+            <q-item >
+              <a :href="link">{{link}}</a>
+            </q-item>
           </q-card-section>
-          <q-card-section class="col-4">
-            <h6>Title</h6>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-          </q-card-section>
-          <q-card-section class="col-4">
-            <h6>Title</h6>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-            <q-item><a href="#">link</a></q-item>
-          </q-card-section>
+
         </q-card>
         <dropdown-info
           imgLink="https://i5.walmartimages.com/dfw/4ff9c6c9-5977/k2-_e9468413-fe29-4fb3-8ff5-aab0f25d4023.v1.jpg?odnHeight=142px&odnWidth=142px&odnBg=FFFFFF"
@@ -87,10 +63,11 @@ export default {
   methods: {
     handleTabHover(tabId: number) {
       this.currentInfo = this.generateInfoForTab(tabId);
+      this.currentMiddleLinks = this.generateLinksForTab(tabId)
     },
     generateLinksForTab(tabId: number) {
       return Array.from(
-        { length: 5 },
+        { length: 10 },
         (_, index) => `Link ${index + 1} for Tab ${tabId}`
       );
     },

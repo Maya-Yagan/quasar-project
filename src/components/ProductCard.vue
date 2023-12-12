@@ -61,11 +61,7 @@ export default defineComponent({
     };
     return { product, addToCart };
   },
-  methods: {
-    handleAddToCart() {
-      this.addToCart();
-    },
-  },
+
 });
 </script>
 

@@ -9,7 +9,7 @@
         </q-avatar>
       </q-card-section>
       <q-card-section>
-        <div class="text-h6 text-bold q-mb-sm">
+        <div class ="text-h6 text-bold q-mb-sm">
           Sign in or create your account
         </div>
         <div class="text-body2 text-weight-regular text-grey-8 q-mb-lg">
@@ -17,12 +17,14 @@
           for you
         </div>
         <div class="text-body2 text-bold">Email Address</div>
-        <q-input outlined v-model="text" :dense="dense" class="q-mb-sm" />
+        <form @submit.prevent.stop="onSubmit">
+        <q-input outlined v-model="text" ref="textRef" :rules="textRules" :dense="dense" class="q-mb-sm" />
         <q-btn color="primary" class="text-capitalize full-width" rounded>
-          <router-link class="myLink" :to="`/login/createAccount/${text}`">
+          <router-link class="myLink" @click="alert = true" :to="`/login/createAccount/${text}`">
             Continue
           </router-link>
         </q-btn>
+      </form>
         <div class="text-body2 text-weight-regular text-grey-8 q-mb-lg">
           Securing your personal information is our priority.<br />
           <a href="#" class="text-grey-8" style="text-decoration: underline"
@@ -35,21 +37,39 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
-
-export default {
+import { ref, defineComponent } from 'vue';
+import { QInput } from 'quasar';
+type Nullable<T> = T | null;
+export default defineComponent({
   props: {
     email: String,
   },
   setup() {
-    const text = ref('');
-    const dense = ref(false);
+    const alert = ref(false);
+    const dense = ref();
+    const text = ref<Nullable<string>>(null);
+    const textRef = ref<Nullable<QInput>>(null);
     return {
-      text,
+      alert,
       dense,
+      text,
+      textRef,
+      textRules: [
+      (val: string | null) =>
+          (val && val.length > 0) || 'This field cannot be empty',
+      ],
+      onSubmit(){
+        textRef.value?.validate();
+        if(textRef.value?.hasError){
+          alert.value = false
+        }
+        else{
+          alert.value = true;
+        }
+      }
     };
   },
-};
+});
 </script>
 <style scoped>
 .center-card-content {

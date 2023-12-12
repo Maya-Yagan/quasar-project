@@ -6,7 +6,6 @@
           imgLink="https://i5.walmartimages.com/dfw/4ff9c6c9-923c/k2-_6538e5fc-7d2c-46e9-9c84-94e8f853a86f.v1.jpg?odnHeight=256&odnWidth=385&odnBg=&odnDynImageQuality=70"
           cardHeight="190"
           cardWidth="280"
-          :isVisible="true"
           title="Tech gifts up to 30% off"
           textSize="20"
         >
@@ -16,7 +15,6 @@
         <shopping-image
           imgLink="https://i5.walmartimages.com/dfw/4ff9c6c9-8d13/k2-_f484ac6f-a825-4c7e-b3c1-094c9986470c.v1.jpg?odnHeight=447&odnWidth=794&odnBg=&odnDynImageQuality=70"
           cardHeight="350"
-          :isVisible="true"
           cardWidth="600"
         >
         </shopping-image>
@@ -26,7 +24,6 @@
           imgLink="https://i5.walmartimages.com/dfw/4ff9c6c9-b6c0/k2-_d371f6f6-bcf2-481f-9be0-ff612502bfae.v1.jpg?odnHeight=216&odnWidth=385&odnBg=&odnDynImageQuality=70"
           cardHeight="160"
           cardWidth="280"
-          :isVisible="true"
           title="Decor up to 50% off"
           textSize="30"
         >

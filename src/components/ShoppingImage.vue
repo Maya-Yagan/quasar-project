@@ -9,7 +9,6 @@
       rounded
       color="black"
       label="Shop now"
-      v-if="isVisible"
       :style="{ position: 'absolute', bottom: '10px', left: '10px', zIndex: 1 }"
     />
     <q-img :src="imgLink" class="image-container">
@@ -31,10 +30,6 @@ export default {
     cardHeight: { type: [String, Number], default: 'auto' },
     title: { type: String },
     textSize: { type: [String, Number], default: '30' },
-    isVisible: {
-      type: Boolean,
-      required: true,
-    },
   },
 };
 </script>
