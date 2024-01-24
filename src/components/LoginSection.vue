@@ -9,7 +9,7 @@
         </q-avatar>
       </q-card-section>
       <q-card-section>
-        <div class ="text-h6 text-bold q-mb-sm">
+        <div class="text-h6 text-bold q-mb-sm">
           Sign in or create your account
         </div>
         <div class="text-body2 text-weight-regular text-grey-8 q-mb-lg">
@@ -18,13 +18,23 @@
         </div>
         <div class="text-body2 text-bold">Email Address</div>
         <form @submit.prevent.stop="onSubmit">
-        <q-input outlined v-model="text" ref="textRef" :rules="textRules" :dense="dense" class="q-mb-sm" />
-        <q-btn color="primary" class="text-capitalize full-width" rounded>
-          <router-link class="myLink" @click="alert = true" :to="`/login/createAccount/${text}`">
-            Continue
-          </router-link>
-        </q-btn>
-      </form>
+          <q-input
+            outlined
+            v-model="text"
+            ref="textRef"
+            :rules="textRules"
+            :dense="dense"
+            class="q-mb-sm"
+          />
+          <q-btn
+            @click="checkAndProceed"
+            color="primary"
+            label="Continue"
+            class="text-capitalize full-width"
+            rounded
+          >
+          </q-btn>
+        </form>
         <div class="text-body2 text-weight-regular text-grey-8 q-mb-lg">
           Securing your personal information is our priority.<br />
           <a href="#" class="text-grey-8" style="text-decoration: underline"
@@ -37,8 +47,9 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, defineComponent, getCurrentInstance } from 'vue';
 import { QInput } from 'quasar';
+import { useUserStore } from 'src/stores/user';
 type Nullable<T> = T | null;
 export default defineComponent({
   props: {
@@ -49,24 +60,49 @@ export default defineComponent({
     const dense = ref();
     const text = ref<Nullable<string>>(null);
     const textRef = ref<Nullable<QInput>>(null);
+    const currentInstance = getCurrentInstance();
+    const userStore = useUserStore();
+    const checkAndProceed = async () => {
+      textRef.value?.validate();
+      if (textRef.value?.hasError) {
+        alert.value = false;
+      } else {
+        const email = text.value || '';
+        console.log(email);
+        const emailExists = await userStore.checkEmailExists(email);
+        console.log(emailExists);
+        console.log(email);
+        if (emailExists) {
+          // Email exists, proceed to sign in
+          currentInstance?.appContext.config.globalProperties.$router.push(
+            `/login/signIn/${email}`
+          );
+        } else {
+          // Email doesn't exist, navigate to create account
+          currentInstance?.appContext.config.globalProperties.$router.push(
+            `/login/createAccount/${email}`
+          );
+        }
+      }
+    };
     return {
+      checkAndProceed,
       alert,
       dense,
       text,
       textRef,
       textRules: [
-      (val: string | null) =>
+        (val: string | null) =>
           (val && val.length > 0) || 'This field cannot be empty',
       ],
-      onSubmit(){
+      onSubmit() {
         textRef.value?.validate();
-        if(textRef.value?.hasError){
-          alert.value = false
-        }
-        else{
+        if (textRef.value?.hasError) {
+          alert.value = false;
+        } else {
           alert.value = true;
         }
-      }
+      },
     };
   },
 });
