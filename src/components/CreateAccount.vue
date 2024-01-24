@@ -89,44 +89,67 @@
       </q-card-section>
     </q-card>
   </div>
-  <q-dialog v-model="alert">
-    <q-card>
-      <q-card-section>
-        <div class="text-h6">Your Account has been created</div>
-      </q-card-section>
-      <q-card-section class="q-pt-none">
-        Welcome, {{ firstName }} {{ lastName }}
-      </q-card-section>
-      <q-card-actions align="right">
-        <q-btn
-          to="/"
-          class="bg-primary"
-          flat
-          label="Start shopping"
-          color="white"
-          v-close-popup
-        />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
-import { useQuasar } from 'quasar';
+import { ref, defineComponent, getCurrentInstance } from 'vue';
+import { useRoute } from 'vue-router';
 import { QInput } from 'quasar';
+import { useUserStore } from 'src/stores/user';
+
 type Nullable<T> = T | null;
 export default defineComponent({
   setup() {
+    const currentInstance = getCurrentInstance();
+    const route = useRoute();
     const alert = ref(false);
-    const $q = useQuasar();
     const firstName = ref<Nullable<string>>(null);
     const lastName = ref<Nullable<string>>(null);
     const password = ref<Nullable<string>>(null);
     const firstNameRef = ref<Nullable<QInput>>(null);
     const lastNameRef = ref<Nullable<QInput>>(null);
     const passwordRef = ref<Nullable<QInput>>(null);
+    const userStore = useUserStore();
+    //const { addUserToFirestore } = useFirestore();
+    const createAccount = async (email: string) => {
+      try {
+        const userCredential = await userStore.registerWithEmailAndPassword(
+          email,
+          password.value ?? ''
+        );
+        // Validate inputs
+        firstNameRef.value?.validate();
+        lastNameRef.value?.validate();
+        passwordRef.value?.validate();
+
+        if (
+          firstNameRef.value?.hasError ||
+          lastNameRef.value?.hasError ||
+          passwordRef.value?.hasError
+        ) {
+          alert.value = false;
+        } else {
+          alert.value = true;
+          const userUid = userCredential.user?.uid;
+          const user = {
+            uid: userUid,
+            firstName: firstName.value ?? '',
+            lastName: lastName.value ?? '',
+            email: email,
+            cartItems: [], // Initialize an empty cart
+          };
+          userStore.setUser(user);
+          await userStore.addUserToFirestore(user);
+          const userCart = await userStore.getUserCartFromFirestore(email);
+          userStore.cartItems = userCart ?? [];
+          currentInstance?.appContext.config.globalProperties.$router.push('/');
+        }
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+    };
     return {
+      alert,
       right1: ref(true),
       right2: ref(true),
       firstName,
@@ -149,25 +172,11 @@ export default defineComponent({
       ],
       dense: ref(),
       isPwd: ref(true),
-      alert,
-      onSubmit() {
-        firstNameRef.value?.validate();
-        lastNameRef.value?.validate();
-        passwordRef.value?.validate();
-        if (
-          firstNameRef.value?.hasError ||
-          lastNameRef.value?.hasError ||
-          passwordRef.value?.hasError
-        ) {
-          alert.value = false;
-        } else {
-          alert.value = true;
-          $q.notify({
-            icon: 'done',
-            color: 'positive',
-            message: 'Submitted',
-          });
-        }
+      async onSubmit() {
+        const email = Array.isArray(route.params.email)
+          ? route.params.email.join('') // If it's an array, join the elements into a string
+          : route.params.email;
+        await createAccount(email);
       },
     };
   },
