@@ -74,7 +74,6 @@ import { defineComponent } from 'vue';
 import ProductsBrowser from '../components/ProductsBrowser.vue';
 import ShoppingImage from 'src/components/ShoppingImage.vue';
 export default defineComponent({
-  name: 'IndexPage',
   components: { ShoppingImage, ProductsBrowser },
 });
 </script>
