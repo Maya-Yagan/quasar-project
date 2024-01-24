@@ -40,12 +40,16 @@ interface Product {
   title: string;
   imgLink: string;
   price: number;
+  companyName: string;
+  productInfo: string;
 }
 export default defineComponent({
   props: {
     title: { type: String, required: true },
     imgLink: { type: String, required: true },
     price: { type: Number, required: true },
+    companyName: { type: String, required: true },
+    productInfo: { type: String, required: true },
     currentPage: { type: Number },
     isVisible: { type: Boolean, required: true },
   },
@@ -54,6 +58,8 @@ export default defineComponent({
       title: props.title,
       imgLink: props.imgLink,
       price: props.price,
+      companyName: props.companyName,
+      productInfo: props.productInfo,
     });
 
     const addToCart = () => {
@@ -61,7 +67,6 @@ export default defineComponent({
     };
     return { product, addToCart };
   },
-
 });
 </script>
 
