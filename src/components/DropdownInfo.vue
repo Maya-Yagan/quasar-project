@@ -5,13 +5,13 @@
         <q-img
           class="rounded-borders"
           style="max-width: 200px; max-height: 300px"
-          :src="imgLink"
+          :src="props.imgLink"
         />
         <div class="text-black text-h6 q-pa-sm">
-          {{ title }}
+          {{ props.title }}
         </div>
         <div class="text-black text-body2 q-py-sm">
-          {{ info }}
+          {{ props.info }}
         </div>
         <q-btn
           outline
@@ -25,14 +25,8 @@
   </q-card>
 </template>
 
-<script lang="ts">
-export default {
-  props: {
-    imgLink: { type: String },
-    info: { type: String },
-    title: { type: String },
-  },
-};
+<script setup lang="ts">
+const props = defineProps(['imgLink', 'info', 'title']);
 </script>
 <style scoped>
 .my-card {
