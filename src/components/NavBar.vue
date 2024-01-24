@@ -56,8 +56,16 @@
           class="text-capitalize MyBtn"
           icon="favorite_border"
         >
-          <div class="row items-center no-wrap">
-            <div>Reorder<br />My Items</div>
+          <div class="row items-center">
+            <div>
+              <div
+                class="text-weight-light q-pa-none q-ml-none"
+                style="font-size: 12px; margin-bottom: -5px"
+              >
+                Reorder
+              </div>
+              <div>My Items</div>
+            </div>
             <q-menu anchor="bottom start" self="top left" :offset="[37, 20]">
               <q-list style="min-width: 100px">
                 <q-item>
@@ -82,12 +90,30 @@
             </q-menu>
           </div>
         </q-btn>
-        <q-btn flat rounded icon="person" class="text-capitalize MyBtn">
+        <q-btn flat rounded icon="perm_identity" class="text-capitalize MyBtn">
           <div class="row items-center no-wrap">
-            <div>Sign in<br />Account</div>
+            <div v-if="!isSignedIn">
+              <div
+                class="text-weight-light q-pa-none q-ml-none"
+                style="font-size: 12px; margin-bottom: -5px"
+              >
+                Sign in
+              </div>
+              <div class="text-weight-bold q-pa-none q-mt-none">Account</div>
+            </div>
+            <div v-else>
+              <div
+                class="text-weight-light q-pa-none q-ml-none"
+                style="font-size: 12px; margin-bottom: -5px"
+              >
+                Hi, {{ userStore.user.firstName }}
+                {{ userStore.user.lastName?.charAt(0) }}
+              </div>
+              <div class="text-weight-bold">Account</div>
+            </div>
             <q-menu anchor="bottom start" self="top left" :offset="[37, 20]">
               <q-list style="min-width: 80px">
-                <q-item>
+                <q-item v-if="!isSignedIn">
                   <q-btn
                     to="/login"
                     rounded
@@ -107,6 +133,21 @@
                   <q-icon name="auto_awesome" color="primary" class="q-ma-sm" />
                   <q-item-section
                     ><a href="#" class="aa">Walmart+</a></q-item-section
+                  >
+                </q-item>
+                <q-item v-if="isSignedIn">
+                  <q-icon name="perm_identity" class="q-ma-sm" />
+                  <q-item-section
+                    ><router-link to="/userAccount" class="aa"
+                      >Account</router-link
+                    ></q-item-section
+                  >
+                </q-item>
+                <q-separator inset />
+                <q-item clickable @click="signOut" v-if="isSignedIn">
+                  <q-icon name="logout" class="q-ma-sm" />
+                  <q-item-section class="text-weight-light"
+                    >Sign out</q-item-section
                   >
                 </q-item>
               </q-list>
@@ -135,6 +176,7 @@
         </q-btn>
       </q-toolbar>
     </div>
+    <q-separator class="bg-white" style="height: 0.5px"></q-separator>
     <div v-if="show">
       <q-bar class="bg-primary">
         <div class="text-caption cursor-pointer">
@@ -161,16 +203,29 @@
   </q-header>
 </template>
 <script lan="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, toRefs, computed } from 'vue';
 import DropdownButton from '../components/DropdownButton.vue';
 import { useCartStore } from '../stores/cart';
+import { useUserStore } from '../stores/user';
 export default defineComponent({
-  props: {
-    show: { type: Boolean, default: false },
-  },
-
-  data() {
+  setup() {
+    const userStore = useUserStore();
+    const { isSignedIn } = toRefs(userStore);
+    const signOut = () => {
+      console.log('Logout called');
+      userStore.logout().then(() => {
+        useCartStore().resetCart();
+        this.$router.push('/');
+      });
+    };
+    const cartItemsCount = computed(() => useCartStore().cartItemsCount);
+    const totalPrice = computed(() => useCartStore().totalPrice);
     return {
+      isSignedIn,
+      userStore,
+      signOut,
+      cartItemsCount,
+      totalPrice,
       tabsServices: [
         { id: 1, label: 'All Services' },
         { id: 2, label: 'Get Inspired' },
@@ -186,44 +241,39 @@ export default defineComponent({
         { id: 12, label: 'Ordering Online' },
       ],
       tabsDepartments: [
-        { id: 1, label: 'All Departments' },
-        { id: 2, label: 'Deals' },
-        { id: 3, label: 'Grocery' },
-        { id: 4, label: 'Christmas Shop' },
-        { id: 5, label: 'Gift Finder' },
-        { id: 6, label: 'Clothing, Shoes & Accessories' },
-        { id: 7, label: 'Electronics' },
-        { id: 8, label: 'Home, Furniture & Appliances' },
-        { id: 9, label: 'Toys & Video Games' },
-        { id: 10, label: 'Baby' },
-        { id: 11, label: 'Auto & Tires' },
-        { id: 12, label: 'Pharmacy, Health & Wellness' },
-        { id: 13, label: 'Personal Care' },
-        { id: 14, label: 'Beauty' },
-        { id: 15, label: 'Pets' },
-        { id: 16, label: 'Home Improvement' },
-        { id: 17, label: 'Patio & Garden' },
-        { id: 18, label: 'Household Essentials' },
-        { id: 19, label: 'Sports & Outdoors' },
-        { id: 20, label: 'Seasonal Decor & Party Supplies' },
-        { id: 21, label: 'School, Office & Art Supplies' },
-        { id: 22, label: 'Movies, Music & Books' },
-        { id: 23, label: 'Gift Cards' },
-        { id: 24, label: 'Shop With Purpose' },
+        { id: 1, label: 'All Departments', route: '/departments' },
+        { id: 2, label: 'Deals', route: '/' },
+        { id: 3, label: 'Grocery', route: '/' },
+        { id: 4, label: 'Christmas Shop', route: '/' },
+        { id: 5, label: 'Gift Finder', route: '/' },
+        { id: 6, label: 'Clothing, Shoes & Accessories', route: '/' },
+        { id: 7, label: 'Electronics', route: '/' },
+        { id: 8, label: 'Home, Furniture & Appliances', route: '/' },
+        { id: 9, label: 'Toys & Video Games', route: '/' },
+        { id: 10, label: 'Baby', route: '/' },
+        { id: 11, label: 'Auto & Tires', route: '/' },
+        { id: 12, label: 'Pharmacy, Health & Wellness', route: '/' },
+        { id: 13, label: 'Personal Care', route: '/' },
+        { id: 14, label: 'Beauty', route: '/' },
+        { id: 15, label: 'Pets', route: '/' },
+        { id: 16, label: 'Home Improvement', route: '/' },
+        { id: 17, label: 'Patio & Garden', route: '/' },
+        { id: 18, label: 'Household Essentials', route: '/' },
+        { id: 19, label: 'Sports & Outdoors', route: '/' },
+        { id: 20, label: 'Seasonal Decor & Party Supplies', route: '/' },
+        { id: 21, label: 'School, Office & Art Supplies', route: '/' },
+        { id: 22, label: 'Movies, Music & Books', route: '/' },
+        { id: 23, label: 'Gift Cards', route: '/' },
+        { id: 24, label: 'Shop With Purpose', route: '/' },
       ],
     };
   },
+
   components: {
     DropdownButton,
   },
-
-  computed: {
-    cartItemsCount() {
-      return useCartStore().cartItemsCount;
-    },
-    totalPrice() {
-      return useCartStore().totalPrice;
-    },
+  props: {
+    show: { type: Boolean, default: false },
   },
 });
 </script>
