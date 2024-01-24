@@ -2,9 +2,11 @@
   <q-list style="min-width: 200px">
     <q-item
       v-for="tab in tabs"
+      :to="tab.route"
       :key="tab.id"
       @mouseover="handleTabHover(tab.id)"
       clickable
+      class="text-black"
     >
       <q-item-section>{{ tab.label }}</q-item-section>
     </q-item>
@@ -15,13 +17,17 @@
 export default {
   props: {
     tabs: {
-      type: Array as () => { id: number; label: string }[],
+      type: Array as () => { id: number; label: string; route: string }[],
     },
   },
-  methods: {
-    handleTabHover(tabId: number) {
-      this.$emit('tab-hover', tabId);
-    },
+  setup(props, { emit }) {
+    const handleTabHover = (tabId: number) => {
+      emit('tab-hover', tabId);
+    };
+
+    return {
+      handleTabHover,
+    };
   },
 };
 </script>
